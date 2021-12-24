@@ -8,8 +8,26 @@ typedef struct {
     int eo[12]; /* Edge Orientation エッジパーツの向き */
 } cube;
 
+/* プロトタイプ宣言 */
+void apply_move(cube*, cube);
+
 /* メイン関数 */
 int main(void) {
     printf("hello, world\n");
     return 0;
+}
+
+/* キューブを動かす関数 */
+void apply_move(cube *state, cube move) {
+    cube new_state;
+    for (int i; i < 8; i++) {
+        new_state.cp[i] = state->cp[move.cp[i]];
+        new_state.co[i] = (state->co[move.co[i]] + move.co[i]) % 3;
+    }
+    for (int i; i < 12; i++) {
+        new_state.ep[i] = state->ep[move.ep[i]];
+        new_state.eo[i] = (state->eo[move.eo[i]] + move.eo[i]) % 2;
+    }
+    *state = new_state;
+    return;
 }
