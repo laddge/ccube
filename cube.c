@@ -10,6 +10,7 @@ typedef struct {
 
 /* プロトタイプ宣言 */
 void apply_move(cube*, cube);
+void print_state(cube);
 
 /* メイン関数 */
 int main(void) {
@@ -29,5 +30,31 @@ void apply_move(cube *state, cube move) {
         new_state.eo[i] = (state->eo[move.ep[i]] + move.eo[i]) % 2;
     }
     *state = new_state;
+    return;
+}
+
+/* 表示用関数 */
+void print_state(cube state) {
+    printf("cp: [%d", state.cp[0]);
+    for (int i = 0; i < 7; i++) {
+        printf(", %d", state.cp[i + 1]);
+    }
+    printf("]\n");
+    printf("co: [%d", state.co[0]);
+    for (int i = 0; i < 7; i++) {
+        printf(", %d", state.co[i + 1]);
+    }
+    printf("]\n");
+    printf("ep: [%d", state.ep[0]);
+    for (int i = 0; i < 11; i++) {
+        printf(", %d", state.ep[i + 1]);
+    }
+    printf("]\n");
+    printf("eo: [%d", state.eo[0]);
+    for (int i = 0; i < 11; i++) {
+        printf(", %d", state.eo[i + 1]);
+    }
+    printf("]\n");
+
     return;
 }
