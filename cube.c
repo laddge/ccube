@@ -10,6 +10,7 @@ typedef struct {
 
 /* プロトタイプ宣言 */
 void apply_move(cube*, cube);
+int is_solved(cube*);
 void print_state(cube);
 
 /* グローバル変数を定義 */
@@ -143,6 +144,20 @@ void apply_move(cube *state, cube move) {
     }
     *state = new_state;
     return;
+}
+
+/* 完成したか判定する関数 */
+int is_solved(cube *state) {
+    static cube solved = {
+        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 1, 2, 3, 4, 5, 6, 7},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}
+    };
+    return state->cp == solved.cp &&
+        state->co == solved.co &&
+        state->ep == solved.ep &&
+        state->eo == solved.eo;
 }
 
 /* 表示用関数 */
