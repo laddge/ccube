@@ -20,13 +20,13 @@ int main(void) {
 /* キューブを動かす関数 */
 void apply_move(cube *state, cube move) {
     cube new_state;
-    for (int i; i < 8; i++) {
+    for (int i = 0; i < 8; i++) {
         new_state.cp[i] = state->cp[move.cp[i]];
-        new_state.co[i] = (state->co[move.co[i]] + move.co[i]) % 3;
+        new_state.co[i] = (state->co[move.cp[i]] + move.co[i]) % 3;
     }
-    for (int i; i < 12; i++) {
+    for (int i = 0; i < 12; i++) {
         new_state.ep[i] = state->ep[move.ep[i]];
-        new_state.eo[i] = (state->eo[move.eo[i]] + move.eo[i]) % 2;
+        new_state.eo[i] = (state->eo[move.ep[i]] + move.eo[i]) % 2;
     }
     *state = new_state;
     return;
