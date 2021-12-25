@@ -11,6 +11,7 @@ typedef struct {
 /* プロトタイプ宣言 */
 void apply_move(cube*, cube);
 int is_solved(cube*);
+int search(cube*, int);
 void print_state(cube);
 
 /* グローバル変数を定義 */
@@ -124,6 +125,9 @@ cube moves[] = {
     {8, 4, 2, 3, 0, 5, 6, 7, 1, 9, 10, 11},
     {1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0}},
 };
+int solution[64]; /* 解法のリスト */
+int len_solution; /* 解法の長さ */
+
 
 /* メイン関数 */
 int main(void) {
@@ -158,6 +162,30 @@ int is_solved(cube *state) {
         state->co == solved.co &&
         state->ep == solved.ep &&
         state->eo == solved.eo;
+}
+
+/* 探索する関数 */
+int search(cube *state, int depth) {
+    /* 探索終了の判定 */
+    if (depth == 0) {
+        if (is_solved(state)) {
+            return 1;
+        }
+        return 0;
+    }
+
+    /* 探索 */
+    for (int i = 0; i < 8; i++) {
+        solution[len_solution] = i;
+        len_solution++;
+        cube moved = *state;
+        apply_move(&moved, moves[i]);
+        if (search(&moved, depth - 1)) {
+            return 1;
+        }
+        len_solution--;
+    }
+    return 1;
 }
 
 /* 表示用関数 */
