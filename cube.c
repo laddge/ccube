@@ -8,6 +8,12 @@ typedef struct {
     int eo[12]; /* Edge Orientation エッジパーツの向き */
 } cube;
 
+/* 解法を格納する構造体を定義 */
+typedef struct {
+    int array[64]; /* 解法の配列 */
+    int len; /* 解法の長さ */
+} sol;
+
 /* プロトタイプ宣言 */
 void apply_move(cube*, cube);
 int is_solved(cube*);
@@ -125,9 +131,9 @@ cube moves[] = {
     {8, 4, 2, 3, 0, 5, 6, 7, 1, 9, 10, 11},
     {1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0}},
 };
-int solution[64]; /* 解法のリスト */
-int len_solution; /* 解法の長さ */
 
+/* 解法を格納 */
+sol solution;
 
 /* メイン関数 */
 int main(void) {
@@ -176,14 +182,14 @@ int search(cube *state, int depth) {
 
     /* 探索 */
     for (int i = 0; i < 8; i++) {
-        solution[len_solution] = i;
-        len_solution++;
+        solution.array[solution.len] = i;
+        solution.len++;
         cube moved = *state;
         apply_move(&moved, moves[i]);
         if (search(&moved, depth - 1)) {
             return 1;
         }
-        len_solution--;
+        solution.len--;
     }
     return 1;
 }
