@@ -12,12 +12,14 @@ typedef struct {
 typedef struct {
     int array[64]; /* 解法の配列 */
     int len; /* 解法の長さ */
+    int solved; /* 完成したか */
 } sol;
 
 /* プロトタイプ宣言 */
 void apply_move(cube*, cube);
 int is_solved(cube*);
 int search(cube*, int);
+sol solve(cube*);
 void print_state(cube);
 
 /* グローバル変数を定義 */
@@ -192,6 +194,19 @@ int search(cube *state, int depth) {
         solution.len--;
     }
     return 1;
+}
+
+/* 中心の処理をする関数 */
+sol solve(cube *state) {
+    /* 20手まで掘る */
+    for (int depth = 0; depth <= 20; depth++) {
+        if (search(state, depth)) {
+            solution.solved = 1;
+            return solution;
+        }
+    }
+    solution.solved = 0;
+    return solution;
 }
 
 /* 表示用関数 */
