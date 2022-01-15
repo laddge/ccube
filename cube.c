@@ -45,16 +45,15 @@ void apply_move(cube *state, cube move) {
 
 /* 完成したか判定する関数 */
 int is_solved(cube *state) {
-    static cube solved = {
-        {0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 1, 2, 3, 4, 5, 6, 7},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}
-    };
-    return state->cp == solved.cp &&
-        state->co == solved.co &&
-        state->ep == solved.ep &&
-        state->eo == solved.eo;
+    for (int i = 0; i < 8; i++) {
+        if (state->cp[i] != i) return 0;
+        if (state->co[i] != 0) return 0;
+    }
+    for (int i = 0; i < 12; i++) {
+        if (state->ep[i] != i) return 0;
+        if (state->eo[i] != 0) return 0;
+    }
+    return 1;
 }
 
 /* 探索する関数 */
