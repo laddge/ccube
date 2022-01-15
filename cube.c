@@ -18,6 +18,7 @@ typedef struct {
 /* プロトタイプ宣言 */
 void apply_move(cube*, cube);
 int is_solved(cube*);
+int prune(int, cube*);
 int search(cube*, int, sol*);
 void solve(cube*, sol*);
 void print_state(cube);
@@ -54,6 +55,31 @@ int is_solved(cube *state) {
         if (state->eo[i] != 0) return 0;
     }
     return 1;
+}
+
+/* 枝刈りするための関数 */
+int prune(int depth, cube *state) {
+    /* 揃っているコーナーの数を数える */
+    int solved_corners = 0;
+    for (int i = 0; i < 8; i++) {
+        solved_corners += state->cp[i] == i && state->co[i] == 0;
+    }
+    /* 揃っているエッジの数を数える */
+    int solved_edges = 0;
+    for (int i = 0; i < 12; i++) {
+        solved_edges += state->ep[i] == i && state->eo[i] == 0;
+    }
+    /* それ以上探索しても無意味な場合、1を返す */
+    if (depth == 1 && (solved_corners < 4 || solved_edges < 8)) {
+        return 1;
+    }
+    if (depth == 2 && solved_edges < 4) {
+        return 1;
+    }
+    if (depth == 3 && solved_edges < 2) {
+        return 1;
+    }
+    return 0;
 }
 
 /* 探索する関数 */
@@ -174,6 +200,11 @@ int search(cube *state, int depth, sol *solution) {
         if (is_solved(state)) {
             return 1;
         }
+        return 0;
+    }
+
+    /* 枝刈り */
+    if (prune(depth, state)) {
         return 0;
     }
 
