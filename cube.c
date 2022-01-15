@@ -18,13 +18,9 @@ typedef struct {
 /* プロトタイプ宣言 */
 void apply_move(cube*, cube);
 int is_solved(cube*);
-int search(cube*, int);
-sol solve(cube*);
+int search(cube*, int, sol*);
+void solve(cube*, sol*);
 void print_state(cube);
-
-/* グローバル変数を定義 */
-/* 解法を格納 */
-extern sol solution;
 
 /* メイン関数 */
 int main(void) {
@@ -62,7 +58,7 @@ int is_solved(cube *state) {
 }
 
 /* 探索する関数 */
-int search(cube *state, int depth) {
+int search(cube *state, int depth, sol *solution) {
     /* 操作の一覧 */
     cube moves[] = {
         /* U */
@@ -183,30 +179,29 @@ int search(cube *state, int depth) {
     }
 
     /* 探索 */
-    for (int i = 0; i < 8; i++) {
-        solution.array[solution.len] = i;
-        solution.len++;
+    for (int i = 0; i < 18; i++) {
+        solution->array[solution->len] = i;
+        solution->len++;
         cube moved = *state;
         apply_move(&moved, moves[i]);
-        if (search(&moved, depth - 1)) {
+        if (search(&moved, depth - 1, solution)) {
             return 1;
         }
-        solution.len--;
+        solution->len--;
     }
-    return 1;
+    return 0;
 }
 
 /* 中心の処理をする関数 */
-sol solve(cube *state) {
+void solve(cube *state, sol *solution) {
     /* 20手まで掘る */
     for (int depth = 0; depth <= 20; depth++) {
-        if (search(state, depth)) {
-            solution.solved = 1;
-            return solution;
+        if (search(state, depth, solution)) {
+            solution->solved = 1;
+            return;
         }
     }
-    solution.solved = 0;
-    return solution;
+    solution->solved = 0;
 }
 
 /* 表示用関数 */
