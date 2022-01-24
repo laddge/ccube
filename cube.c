@@ -8,6 +8,15 @@ typedef struct {
     int eo[12]; /* Edge Orientation エッジパーツの向き */
 } cube;
 
+/* 遷移表を格納する構造体を定義 */
+typedef struct {
+    int cpt[40320][18]; /* cpの遷移表 */
+    int cot[2187][18]; /* coの遷移表 */
+    int ud_ept[40320][18]; /* ud列のepの遷移表 */
+    int e_ept[24][18]; /* e列のepの遷移表 */
+    int eot[2048][18]; /* eoの遷移表 */
+} trans;
+
 /* 解法を格納する構造体を定義 */
 typedef struct {
     int array[64]; /* 解法の配列 */
