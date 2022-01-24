@@ -38,6 +38,7 @@ void i2co(int, cube*);
 void i2ud_ep(int, cube*);
 void i2e_ep(int, cube*);
 void i2eo(int, cube*);
+void mktrans(trans*);
 int search(cube*, int, sol*);
 void solve(cube*, sol*);
 void print_state(cube);
@@ -325,6 +326,55 @@ void i2eo(int index, cube *state) {
         sum_eo += state->co[i];
     }
     state->eo[11] = (2 - sum_eo % 2) % 2;
+}
+
+/* 遷移表を作る関数 */
+void mktrans(trans *tr) {
+    /* cpの遷移表を作成 */
+    for (int i = 0; i < 40320; i++) {
+        for (int j = 0; j < 18; j++) {
+            cube state;
+            i2cp(i, &state);
+            apply_move(&state, j);
+            tr->cpt[i][j] = cp2i(state);
+        }
+    }
+    /* coの遷移表を作成 */
+    for (int i = 0; i < 2187; i++) {
+        for (int j = 0; j < 18; j++) {
+            cube state;
+            i2co(i, &state);
+            apply_move(&state, j);
+            tr->cot[i][j] = co2i(state);
+        }
+    }
+    /* ud列のepの遷移表を作成 */
+    for (int i = 0; i < 40320; i++) {
+        for (int j = 0; j < 18; j++) {
+            cube state;
+            i2ud_ep(i, &state);
+            apply_move(&state, j);
+            tr->ud_ept[i][j] = ud_ep2i(state);
+        }
+    }
+    /* e列のepの遷移表を作成 */
+    for (int i = 0; i < 24; i++) {
+        for (int j = 0; j < 18; j++) {
+            cube state;
+            i2e_ep(i, &state);
+            apply_move(&state, j);
+            tr->e_ept[i][j] = e_ep2i(state);
+        }
+    }
+    /* eoの遷移表を作成 */
+    for (int i = 0; i < 2048; i++) {
+        for (int j = 0; j < 18; j++) {
+            cube state;
+            i2eo(i, &state);
+            apply_move(&state, j);
+            tr->eot[i][j] = eo2i(state);
+        }
+    }
 }
 
 /* 探索する関数 */
