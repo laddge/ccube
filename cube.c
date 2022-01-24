@@ -39,7 +39,7 @@ void i2ud_ep(int, cube*);
 void i2e_ep(int, cube*);
 void i2eo(int, cube*);
 void mktrans(trans*);
-int search(cube*, int, sol*);
+int search(int, int, int, int, int, int, trans*, sol*);
 void solve(cube*, sol*);
 void print_state(cube);
 
@@ -378,17 +378,12 @@ void mktrans(trans *tr) {
 }
 
 /* 探索する関数 */
-int search(cube *state, int depth, sol *solution) {
+int search(int cpi, int coi, int ud_epi, int e_epi, int eoi, int depth, trans *tr,  sol *solution) {
     /* 探索終了の判定 */
     if (depth == 0) {
-        if (is_solved(state)) {
+        if (cpi == 0 && coi == 0 && ud_epi == 0 && e_epi == 0 && eoi == 0) {
             return 1;
         }
-        return 0;
-    }
-
-    /* 枝刈り */
-    if (prune(depth, state)) {
         return 0;
     }
 
@@ -396,9 +391,7 @@ int search(cube *state, int depth, sol *solution) {
     for (int i = 0; i < 18; i++) {
         solution->array[solution->len] = i;
         solution->len++;
-        cube moved = *state;
-        apply_move(&moved, i);
-        if (search(&moved, depth - 1, solution)) {
+        if (search(tr->cpt[cpi][i], tr->cot[coi][i], tr->ud_ept[ud_epi][i], tr->e_ept[e_epi][i], tr->eot[eoi][i], depth - 1, tr, solution)) {
             return 1;
         }
         solution->len--;
@@ -408,9 +401,18 @@ int search(cube *state, int depth, sol *solution) {
 
 /* 中心の処理をする関数 */
 void solve(cube *state, sol *solution) {
+    /* 遷移表を作成 */
+    trans tr;
+    mktrans(&tr);
+    /* 状態をインデックス化する */
+    int cpi = cp2i(*state);
+    int coi = co2i(*state);
+    int ud_epi = ud_ep2i(*state);
+    int e_epi = e_ep2i(*state);
+    int eoi = eo2i(*state);
     /* 20手まで掘る */
     for (int depth = 0; depth <= 20; depth++) {
-        if (search(state, depth, solution)) {
+        if (search(cpi, coi, ud_epi, e_epi, eoi, depth, &tr, solution)) {
             solution->solved = 1;
             return;
         }
