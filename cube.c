@@ -19,6 +19,16 @@ typedef struct {
 void apply_move(cube*, cube);
 int is_solved(cube*);
 int prune(int, cube*);
+int cp2i(cube);
+int co2i(cube);
+int ud_ep2i(cube);
+int e_ep2i(cube);
+int eo2i(cube);
+void i2cp(int, cube*);
+void i2co(int, cube*);
+void i2ud_ep(int, cube*);
+void i2e_ep(int, cube*);
+void i2eo(int, cube*);
 int search(cube*, int, sol*);
 void solve(cube*, sol*);
 void print_state(cube);
@@ -80,6 +90,121 @@ int prune(int depth, cube *state) {
         return 1;
     }
     return 0;
+}
+
+/* ベクトルをインデックスに変換 */
+int cp2i(cube state) {
+    int index = 0;
+    for (int i = 0; i < 8; i++) {
+        index *= 8 - i;
+        for (int j = i + 1; j < 8; j++) {
+            if (state.cp[i] > state.cp[j]) {
+                index++;
+            }
+        }
+    }
+    return index;
+}
+
+int co2i(cube state) {
+    int index = 0;
+    for (int i = 0; i < 7; i++) {
+        index *= 3;
+        index += state.co[i];
+    }
+    return index;
+}
+
+int ud_ep2i(cube state) {
+    int index = 0;
+    for (int i = 0; i < 8; i++) {
+        index *= 8 - i;
+        for (int j = i + 1; j < 8; j++) {
+            if (state.ep[i + 4] > state.ep[j + 4]) {
+                index++;
+            }
+        }
+    }
+    return index;
+}
+
+int e_ep2i(cube state) {
+    int index = 0;
+    for (int i = 0; i < 4; i++) {
+        index *= 4 - i;
+        for (int j = i + 1; j < 4; j++) {
+            if (state.ep[i] > state.ep[j]) {
+                index++;
+            }
+        }
+    }
+    return index;
+}
+
+int eo2i(cube state) {
+    int index = 0;
+    for (int i = 0; i < 7; i++) {
+        index *= 3;
+        index += state.eo[i];
+    }
+    return index;
+}
+
+/* インデックスをベクトルに変換 */
+void i2cp(int index, cube *state) {
+    for (int i = 6; i > -1; i--) {
+        state->cp[i] = index % (8 - i);
+        index /= 8 - i;
+        for (int j = i + 1; j < 8; j++) {
+            if (state->cp[j] >= state->cp[i]) {
+                state->cp[j]++;
+            }
+        }
+    }
+}
+
+void i2co(int index, cube *state) {
+    int sum_co = 0;
+    for (int i = 6; i > -1; i--) {
+        state->co[i] = index % 3;
+        index /= 3;
+        sum_co += state->co[i];
+    }
+    state->co[7] = (3 - sum_co % 3) % 3;
+}
+
+void i2ud_ep(int index, cube *state) {
+    for (int i = 6; i > -1; i--) {
+        state->ep[i + 4] = index % (8 - i);
+        index /= 8 - i;
+        for (int j = i + 1; j < 8; j++) {
+            if (state->ep[j + 4] >= state->ep[i + 4]) {
+                state->ep[j + 4]++;
+            }
+        }
+    }
+}
+
+void i2e_ep(int index, cube *state) {
+    for (int i = 2; i > -1; i--) {
+        state->ep[i] = index % (4 - i);
+        index /= 4 - i;
+        for (int j = i + 1; j < 4; j++) {
+            if (state->ep[j] >= state->ep[i]) {
+                state->ep[j]++;
+            }
+        }
+    }
+}
+
+void i2eo(int index, cube *state) {
+    int sum_eo = 0;
+    for (int i = 10; i > -1; i--) {
+        state->eo[i] = index % 2;
+        index /= 2;
+        sum_eo += state->co[i];
+    }
+    state->eo[11] = (2 - sum_eo % 2) % 2;
 }
 
 /* 探索する関数 */
